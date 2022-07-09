@@ -1,14 +1,13 @@
 use serde::{Serialize, Deserialize};
 use crate::database::schema::items;
 
-use super::user::User;
-
 #[derive(Serialize, Deserialize, Debug, Queryable)]
+#[diesel(belongs_to(User))]
 pub struct Item {
-    pub id: i32,
+    pub id: u64,
     pub content: String,
+    pub user_id: u64,
     pub is_important: bool,
-    pub user: User,
 }
 
 #[derive(Insertable, Debug)]

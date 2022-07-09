@@ -10,3 +10,9 @@ actix-web = "4"
 serde = {version = "1", features = ["derive"]}
 diesel = { version = "1.4.4", features = ["mysql", "r2d2"] }
 dotenv = "0.15.0"
+bcrypt = "0.13.0"
+actix-web-httpauth = "0.6.0"
+futures = "0.3.21"
+jsonwebtoken = "8.1.1"
+actix-service = "2"
+chrono = "0.4"
