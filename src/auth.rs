@@ -1,5 +1,4 @@
 use chrono::Utc;
-use diesel::{r2d2::{PooledConnection, ConnectionManager}, MysqlConnection};
 use jsonwebtoken::{EncodingKey, Header, TokenData, Validation, DecodingKey};
 use serde::{Serialize, Deserialize};
 

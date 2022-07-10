@@ -7,13 +7,15 @@ mod auth;
 extern crate diesel;
 extern crate dotenv;
 use actix_web::dev::ServiceRequest;
-use actix_web::{middleware, Error, HttpMessage};
+use actix_web::{middleware, Error, HttpMessage, web};
 use actix_web::{HttpServer,App, web::Data};
 use actix_web_httpauth::extractors::AuthenticationError;
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
 use actix_web_httpauth::middleware::HttpAuthentication;
 use routes::test::test;
 use routes::index::index;
+use routes::auth::{signup::signup, login::login};
+use routes::settings::update_user;
 use database::mysql::establish_connection;
 
 
@@ -22,10 +24,10 @@ async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<Servi
         .app_data::<Config>()
         .map(|data| data.clone())
         .unwrap_or_else(Default::default);
-    if req.path().eq("/") || req.path().eq("/test") {
+    println!("{}", req.path());
+    if req.path().eq("/") || req.path().eq("/test") || req.path().eq("/auth/signup") || req.path().eq("/auth/login") {
         return Ok(req);
     }
-    println!("{}", req.path());
     match auth::validate_token(credentials.token()) {
         Ok(res) => {
             if !res.user.is_empty() {
@@ -52,6 +54,13 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(pool.clone()))
             .service(test)
             .service(index)
+            .service(web::scope("/auth")
+                .service(signup)
+                .service(login)
+            )
+            .service(web::scope("/settings")
+                .service(update_user)
+            )
     })
     .bind(("127.0.0.1", 8080))?
     .run()
